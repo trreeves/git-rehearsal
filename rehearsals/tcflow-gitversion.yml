@@ -1,0 +1,13 @@
+tag-prefix: 'v|rc\/v'
+branches:
+  release:
+    regex: ^release\/(.+)\/main
+    mode: ContinuousDeployment
+    tag: rc
+    source-branches: [ 'develop' ]
+    increment: Patch
+  releaseFix:
+    regex: ^release\/(.+)\/fix\/(.+)
+    tag: useBranchName
+    source-branches: [ 'release' ]
+    increment: Patch

@@ -1,0 +1,18 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "..\\git-rehearsal-output"
+		}
+	],
+	"settings": {
+	},
+	"extensions": {
+		"recommendations": [
+			"mhutchie.git-graph",
+			"ms-vscode.powershell"
+		]
+	}
+}
