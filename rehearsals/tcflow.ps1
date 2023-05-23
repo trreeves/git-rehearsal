@@ -31,7 +31,7 @@ New-GitBranch $branch_b
 
 $release_1_0 = "release/1.0"
 New-GitBranch "$release_1_0/main"
-    New-GitTag "rc/v$((Invoke-GitVersion).FullSemVer)"
+    New-GitTag "rc/v$((Invoke-GitVersion).MajorMinorPatch)-rc.0"
     New-GitBranch "$release_1_0/fix/m" 
         Add-GitCommit ./info1.txt -Message "release hardening m-1"
         Add-GitCommit ./info1.txt -Message "release hardening m-2"
@@ -66,7 +66,7 @@ New-GitBranch $branch_d -SourceBranch develop
 
 $release_1_1 = "release/1.1"
 New-GitBranch "$release_1_1/main"
-    New-GitTag "rc/v$((Invoke-GitVersion).FullSemVer)"
+    New-GitTag "rc/v$((Invoke-GitVersion).MajorMinorPatch)-rc.0"
     New-GitBranch "$release_1_1/fix/o" -SourceBranch $release_1_1/main
         Add-GitCommit ./info1.txt -Message "release hardening o-1"
         Add-GitCommit ./info1.txt -Message "release hardening o-2"
@@ -94,7 +94,7 @@ New-GitBranch "$release_1_0/fix/p" -SourceBranch $release_1_0/main
 
 $release_2_0 = "release/2.0"
 New-GitBranch "$release_2_0/main" -SourceBranch develop
-    New-GitTag "rc/v$((Invoke-GitVersion).FullSemVer)"
+    New-GitTag "rc/v$((Invoke-GitVersion).MajorMinorPatch)-rc.0"
 
     ## release
     New-GitTag "v$((Invoke-GitVersion).MajorMinorPatch)"

@@ -8,6 +8,7 @@
 		}
 	],
 	"settings": {
+		"powershell.cwd": "c:\\tre\\src-gh\\git-rehearsal"
 	},
 	"extensions": {
 		"recommendations": [

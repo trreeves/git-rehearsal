@@ -2,7 +2,7 @@
 
 A simple idea with a simple implementation; script predicted Git activity to demonstrate how branching and version strategies will play out.
 
-GitVersion is used to generate version numbers; the version number generated for each commit is appended to the end of the first line of the message. The full GitVersion output is added to the 'body' of each commit message.
+[GitVersion](https://gitversion.net/) is used to generate version numbers; the version number generated for each commit is appended to the end of the first line of the message. The full GitVersion output is added to the 'body' of each commit message.
 
 Then using a Git log viewer of your choice, one can get a graphical representation of the branching and versioning that has occurred to communicate to colleagues. A recommendation is to use the 'GitGraph' extension to VS Code, which works particularly nicely, and VS Code handles very well the case of multiple repos loaded in the current workspace.
 

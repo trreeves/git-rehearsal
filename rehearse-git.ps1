@@ -12,6 +12,10 @@ param (
     [string]
     $rehearsalRootPath="$PSScriptRoot/rehearsals",
 
+    [Parameter(Mandatory=$false)]
+    [string]
+    $gitversionConfig,
+
     [switch]
     $useDocker
 )
@@ -32,12 +36,15 @@ if (-Not (Test-Path $rehearsalFile -PathType Leaf)) {
 $dateStr=Get-Date -Format "yyyy-MM-dd_HH-mm-ss"
 $targetDir="${outputRootPath}/rehearsal-${rehearsalName}-${dateStr}"
 
-
 Write-Verbose "Creating repo in directory $targetDir...."
 
 New-Item -ItemType Directory -Path $targetDir | Out-Null
 
-$rehearsalVersionConfig = "${rehearsalRootPath}/$rehearsalName-gitversion.yml"
+if ($gitversionConfig) {
+    $rehearsalVersionConfig = $gitversionConfig
+} else {
+    $rehearsalVersionConfig = "${rehearsalRootPath}/$rehearsalName-gitversion.yml"
+}
 if ((Test-Path $rehearsalVersionConfig)) {
     Copy-Item $rehearsalVersionConfig "${targetDir}/GitVersion.yml" | Out-Null
 }
