@@ -19,7 +19,7 @@ function Start-GitVersion {
             -v "${repoPath}:/repo" `
             --name "git-rehearsal" `
             --entrypoint /usr/bin/sleep `
-            gittools/gitversion:5.10.3-ubuntu.20.04-6.0 `
+            gittools/gitversion:5.12.0 `
             infinity
     }
 }
