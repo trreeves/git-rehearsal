@@ -61,9 +61,17 @@ function New-GitTag {
     param (
         [Parameter(Mandatory=$true)]
         [string]
-        $tagName
+        $tagName,
+
+        [string]
+        $sourceBranch
     )
     Write-Verbose "New-GitTag"
+
+    if ($sourceBranch) {
+        exec { git checkout $sourceBranch }
+    }
+    
     exec { git tag $tagName }
 }
 
