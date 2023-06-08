@@ -36,7 +36,10 @@ function Add-GitCommit {
         $message,
 
         [string]
-        $branch
+        $branch,
+
+        [string]
+        $gitVersionConfig
     )
 
     Write-Verbose "Add-GitCommit"
@@ -52,7 +55,7 @@ function Add-GitCommit {
     exec { git add . }
     exec { git commit -m $message }
 
-    $versionInfo = Invoke-GitVersion
+    $versionInfo = Invoke-GitVersion $gitVersionConfig
     exec { git commit --amend -m "$message [$($versionInfo.FullSemVer)]`n`n$($versionInfo | ConvertTo-Json)" }
 }
 
@@ -71,7 +74,7 @@ function New-GitTag {
     if ($sourceBranch) {
         exec { git checkout $sourceBranch }
     }
-    
+
     exec { git tag $tagName }
 }
 
@@ -107,7 +110,10 @@ function New-GitMerge {
 
         [Parameter()]
         [switch]
-        $deleteSource=$false
+        $deleteSource=$false,
+
+        [string]
+        $gitVersionConfig
     )
 
     Write-Verbose "New-GitMerge"
@@ -120,7 +126,7 @@ function New-GitMerge {
     exec { git checkout $targetBranch }
     exec { git merge $sourceBranch --no-ff -m $message  }
 
-    $versionInfo = Invoke-GitVersion
+    $versionInfo = Invoke-GitVersion $gitVersionConfig
     exec { git commit --amend -m "$message [$($versionInfo.FullSemVer)]`n`n$($versionInfo | ConvertTo-Json)" }
 
     if ($deleteSource) {

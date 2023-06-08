@@ -30,10 +30,18 @@ function Stop-GitVersion {
 
 function Invoke-GitVersion {
     [CmdletBinding()]
-    param ()
+    param (
+        [string]
+        $configFile
+    )
+
+    $configOpts = ""
+    if ($configFile) {
+        $configOpts = "/config", $configFile
+    }
 
     exec {
-        docker exec git-rehearsal /tools/dotnet-gitversion /repo `
+        docker exec git-rehearsal /tools/dotnet-gitversion /repo @configOpts `
             | ConvertFrom-Json
     }
 }

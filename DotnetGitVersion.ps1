@@ -46,10 +46,18 @@ function Stop-GitVersion {
 
 function Invoke-GitVersion {
     [CmdletBinding()]
-    param ()
+    param (
+        [string]
+        $configFile
+    )
+
+    $configOpts = ""
+    if ($configFile) {
+        $configOpts = "/config", $configFile
+    }
 
     exec {
-        $output = dotnet gitversion 
+        $output = dotnet gitversion . @$configOpts
         Write-Debug "$output"
         $output | ConvertFrom-Json
     }

@@ -16,6 +16,9 @@ param (
     [string]
     $gitversionConfig,
 
+    [Array]
+    $extraGitversionConfigs = @(),
+
     [switch]
     $useDocker
 )
@@ -48,6 +51,8 @@ if ($gitversionConfig) {
 if ((Test-Path $rehearsalVersionConfig)) {
     Copy-Item $rehearsalVersionConfig "${targetDir}/GitVersion.yml" | Out-Null
 }
+
+$extraGitversionConfigs | Copy-Item -Destination $targetDir
 
 Start-GitVersion $targetDir
 
