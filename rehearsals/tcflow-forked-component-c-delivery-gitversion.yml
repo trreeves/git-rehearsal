@@ -1,13 +1,15 @@
-tag-prefix: 'c\/'
+tag-prefix: 'fk\/'
 branches:
+  develop:
+    regex: ^fk\/develop
   release:
-    regex: ^release\/(.+)\/main
+    regex: ^fk\/release\/(.+)\/main
     mode: ContinuousDeployment
     tag: rc
     source-branches: [ 'develop' ]
     increment: Patch
   releaseFix:
-    regex: ^release\/(.+)\/fix\/(.+)
+    regex: ^fk\/release\/(.+)\/fix\/(.+)
     tag: useBranchName
     source-branches: [ 'release' ]
     increment: Patch
