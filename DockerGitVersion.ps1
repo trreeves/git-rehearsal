@@ -35,13 +35,16 @@ function Invoke-GitVersion {
         $configFile
     )
 
-    $configOpts = ""
+    $opts = "/repo", "/nocache"
     if ($configFile) {
-        $configOpts = "/config", $configFile
+        $opts += "/config", $configFile
     }
 
+    Write-Debug ($opts -join " ")
+
     exec {
-        docker exec git-rehearsal /tools/dotnet-gitversion /repo @configOpts `
-            | ConvertFrom-Json
+        $output = docker exec git-rehearsal /tools/dotnet-gitversion @opts `
+        $output | Write-Debug
+        $output | ConvertFrom-Json
     }
 }

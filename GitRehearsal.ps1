@@ -56,7 +56,7 @@ function Add-GitCommit {
     exec { git commit -m $message }
 
     $versionInfo = Invoke-GitVersion $gitVersionConfig
-    exec { git commit --amend -m "$message [$($versionInfo.FullSemVer)]`n`n$($versionInfo | ConvertTo-Json)" }
+    exec { git commit --amend -m "$message [$($versionInfo.FullSemVer)]`n`nConfig : $gitVersionConfig`n`n$($versionInfo | ConvertTo-Json)" }
 }
 
 function New-GitTag {
@@ -127,7 +127,7 @@ function New-GitMerge {
     exec { git merge $sourceBranch --no-ff -m $message  }
 
     $versionInfo = Invoke-GitVersion $gitVersionConfig
-    exec { git commit --amend -m "$message [$($versionInfo.FullSemVer)]`n`n$($versionInfo | ConvertTo-Json)" }
+    exec { git commit --amend -m "$message [$($versionInfo.FullSemVer)]`n`nConfig : $gitVersionConfig`n`n$($versionInfo | ConvertTo-Json)" }
 
     if ($deleteSource) {
         git branch -d $sourceBranch

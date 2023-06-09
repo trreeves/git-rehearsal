@@ -51,14 +51,15 @@ function Invoke-GitVersion {
         $configFile
     )
 
-    $configOpts = ""
+    $opts = "gitversion", ".", "/nocache"
     if ($configFile) {
-        $configOpts = "/config", $configFile
+        $opts += "/config", $configFile
     }
 
+    Write-Debug ($opts -join " ")
     exec {
-        $output = dotnet gitversion . @$configOpts
-        Write-Debug "$output"
+        $output = dotnet @opts
+        $output | Write-Debug
         $output | ConvertFrom-Json
     }
 }
