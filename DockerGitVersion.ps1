@@ -11,7 +11,10 @@ function Start-GitVersion {
     param (
         [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
         [string]
-        $repoPath
+        $repoPath,
+
+        [string]
+        $version = "5.12.0"
     )
 
     exec {
@@ -19,7 +22,7 @@ function Start-GitVersion {
             -v "${repoPath}:/repo" `
             --name "git-rehearsal" `
             --entrypoint /usr/bin/sleep `
-            gittools/gitversion:5.12.0 `
+            gittools/gitversion:$version `
             infinity
     }
 }

@@ -11,7 +11,10 @@ function Start-GitVersion {
     param (
         [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
         [string]
-        $repoPath
+        $repoPath,
+
+        [string]
+        $version = "5.12.0"
     )
 
     $config = 
@@ -21,7 +24,7 @@ function Start-GitVersion {
         "isRoot": true,
         "tools": {
           "gitversion.tool": {
-            "version": "5.12.0",
+            "version": "$version",
             "commands": [
               "dotnet-gitversion"
             ]
