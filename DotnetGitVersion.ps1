@@ -52,8 +52,14 @@ function Invoke-GitVersion {
     param ()
 
     exec {
-        $output = dotnet gitversion 
+        $output = dotnet gitversion /output json /verbosity quiet | Out-String
+        if ($LASTEXITCODE -gt 0) {
+            Write-Verbose $output
+            throw "Gitversion failed! ($LASTEXITCODE)"
+        }
+
         Write-Debug "$output"
-        $output | ConvertFrom-Json
+
+        $output.SubString($output.IndexOf('{')) | ConvertFrom-Json
     }
 }

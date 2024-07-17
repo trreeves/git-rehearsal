@@ -1,0 +1,88 @@
+## Defines the version calculation behavior of GitVersion.
+##
+## GitVersion is configured by default for the GitFlow branching strategy.
+## Bladed uses a strategy sometimes referred to as 'release flow'.
+## 
+## GitVersion requires some custom configuration so it behaves correctly in all cases
+## for 'release flow', and for the Bladed branching naming conventions required
+## for the Team City integration.
+##
+## See docs for more info on GitVersion configuration: https://gitversion.net/docs/reference/configuration
+
+# These prefixes must match the Git Tags that record released versions
+tag-prefix: 'v|rc\/v'
+
+# Incrementing version numbers via commit hints isn't something that the release-flow strategy requires,
+# so to avoid any chance of mis-use, we turn it off here.
+commit-message-incrementing: Disabled
+
+branches:
+
+  # --------
+  # We don't have a logical 'main' branch, as per GitFlow, so we effectively disable it
+  main:
+    regex: ^__$
+
+  # --------
+  # BRANCH: main
+  # Our 'main' is equivalent to the GitFlow 'develop' branch
+  develop:
+    regex: ^main$
+    mode: ContinuousDeployment
+    increment: Minor
+    tag: alpha
+
+  # --------
+  # BRANCHES: release/<major>.<minor>/main
+  # Our release branches are similar to those in GitFlow, but they are never merged into any other branch.
+  release:
+    regex: ^release\/(.+)\/main
+    # Each commit yields an incremented pre-release
+    mode: ContinuousDeployment
+    # We choose to yield 'rc' pre-release tags, to our taste.
+    tag: rc
+    # After a tagged release, commits on a release branch increment the patch.
+    increment: patch
+    source-branches:
+    - develop
+    is-release-branch: true
+
+  # --------
+  # BRANCHES: pull/<PR-id>/merge
+  pull-request:
+    regex: ^pull\/(.+)\/merge
+    mode: ContinuousDeployment
+    tag: PullRequest
+    increment: Inherit
+    tag-number-pattern: '[/-](?<number>\d+)[-/]'
+    source-branches: 
+    - develop
+    - release
+    - feature
+
+  # --------
+  # BRANCHES: <prefix>/<name>, release/<major.minor>/<name>
+  feature:
+    # This regex is promiscuous so it matches feature branches from main, dev 'main' branches and release branches.
+    # Any tokens after the last forward slash will be used in the pre-release tag
+    regex: ^.+\/
+    # We want to represent the commit count in the pre-release tag for feature branches,
+    # to yield a unique sem-ver for each commit, because that's important to us; this is
+    # what ContinuousDeployment enables.
+    mode: ContinuousDeployment
+    # We want to increment the version either by Patch or Minor, depending on the base branch
+    increment: inherit
+    # Render the tokens proceeding the regex match, as the stem of the pre-release tag
+    tag: useBranchName
+    source-branches: 
+    - develop
+    - release
+    - feature
+
+  # --------
+  # The following branches have no equivalents in release-flow.
+  hotfix:
+    regex: ^___$
+
+  support:
+    regex: ^___$

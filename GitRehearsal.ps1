@@ -16,7 +16,7 @@ function Set-GitBranchName {
         [string]
         $newName
     )
-    Write-Verbose "Set-GitBranchName"
+    Write-Verbose "Set-GitBranchName from $branchName to $newName"
     exec { git branch -m $branchName $newName }
 }
 
@@ -39,7 +39,7 @@ function Add-GitCommit {
         $branch
     )
 
-    Write-Verbose "Add-GitCommit"
+    Write-Verbose "Add-GitCommit on $branch"
     if ([System.String]::IsNullOrEmpty($value)) {
         $value = $message
     }
@@ -66,13 +66,25 @@ function New-GitTag {
         [string]
         $sourceBranch
     )
-    Write-Verbose "New-GitTag"
+    Write-Verbose "New-GitTag $tagName on $sourceBranch"
 
     if ($sourceBranch) {
         exec { git checkout $sourceBranch }
     }
     
     exec { git tag $tagName }
+}
+
+function Set-GitBranch {
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory=$true)]
+        [string]
+        $branchName
+    )
+
+    Write-Verbose "Set-GitBranch $branchName"
+    exec { git checkout $branchName }
 }
 
 function New-GitBranch {
@@ -86,7 +98,7 @@ function New-GitBranch {
         $sourceBranch
     )
 
-    Write-Verbose "New-GitBranch"
+    Write-Verbose "New-GitBranch $branchName from $sourceBranch"
     if ($sourceBranch) {
         exec { git checkout $sourceBranch }
     }
@@ -110,7 +122,7 @@ function New-GitMerge {
         $deleteSource=$false
     )
 
-    Write-Verbose "New-GitMerge"
+    Write-Verbose "New-GitMerge $sourceBranch into $targetBranch"
     
     if (-Not $sourceBranch) {
         $sourceBranch = exec { git branch --show-current }

@@ -21,7 +21,7 @@ function Start-GitVersion {
         docker run -d --rm `
             -v "${repoPath}:/repo" `
             --name "git-rehearsal" `
-            --entrypoint /usr/bin/sleep `
+            --entrypoint /bin/sleep `
             gittools/gitversion:$version `
             infinity
     }
@@ -36,7 +36,7 @@ function Invoke-GitVersion {
     param ()
 
     exec {
-        docker exec git-rehearsal /tools/dotnet-gitversion /repo `
-            | ConvertFrom-Json
+        $output = docker exec git-rehearsal /tools/dotnet-gitversion /repo /output json /verbosity quiet
+        $output.SubString($output.IndexOf('{')) | ConvertFrom-Json
     }
 }
