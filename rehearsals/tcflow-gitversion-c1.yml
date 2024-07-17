@@ -1,0 +1,22 @@
+tag-prefix: 'c1\/'
+branches:
+  main:
+    regex: ^develop
+    mode: ContinuousDelivery
+    tag: ''
+    increment: Patch
+    prevent-increment-of-merged-branch-version: true
+    track-merge-target: false
+    source-branches: [ ]
+    tracks-release-branches: false
+    is-release-branch: false
+    is-mainline: true
+    pre-release-weight: 55000
+  develop:
+    regex: ^___
+  release:
+    regex: ^___
+  hotfix:
+    regex: ^___
+  support:
+    regex: ^___

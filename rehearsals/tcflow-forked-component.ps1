@@ -1,6 +1,7 @@
 . $PSScriptRoot/tcflow-utils.ps1
 
 $forkedConfig = "tcflow-forked-component-c-delivery-gitversion.yml"
+$c1Config = "tcflow-gitversion-c1.yml"
 
 Set-GitBranchName master "develop"
 Add-GitCommit -File ./info.txt -Value "init" -Message "init"
@@ -37,23 +38,17 @@ Invoke-PerformRelease "5.0" -Prefix "fk/" -TagPrefix "fk" -GitVersionConfig $for
 
 Invoke-FeatureBranchWork "story_d" develop
 
-exit
-
 # New 'Minor' release (1.1.0) hardening phase and release
 
-Invoke-InitReleaseBranch "1.1"
-Invoke-ReleaseFixWork "o" "1.1"
-Invoke-PerformRelease "1.1"
+Invoke-FeatureBranchWork "story_e" develop -GitVersionConfig $c1Config
+New-GitTag "c1/$((Invoke-GitVersion $c1Config).MajorMinorPatch)"
+
+Invoke-FeatureBranchWork "story_f" develop -GitVersionConfig $c1Config
+New-GitTag "c1/$((Invoke-GitVersion $c1Config).MajorMinorPatch)"
 
 # More dev work on develop
-
-Invoke-FeatureBranchWork "story_e" develop
-
-# Patch/hotfix release release for 1.0 (1.0.1)
-Invoke-ReleaseFixWork "p" "1.0"
-Invoke-PerformRelease "1.0"
-
-# New major release, with no hardening required
-
+Invoke-FeatureBranchWork "story_g" develop
 Invoke-InitReleaseBranch "2.0"
-Invoke-PerformRelease "2.0"
+
+Invoke-FeatureBranchWork "story_h" develop -GitVersionConfig $c1Config
+New-GitTag "c1/$((Invoke-GitVersion $c1Config).MajorMinorPatch)"
