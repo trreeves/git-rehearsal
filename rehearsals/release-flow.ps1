@@ -131,9 +131,10 @@ Invoke-ReleaseFixWork "q" "1.0" -skipMerge
 Invoke-ReleaseFixWork "r" "1.0" -skipMerge
 
 Invoke-PublishPullRequest -Source "release/1.0/fix/q" -Target "release/1.0/main"
-Invoke-PublishPullRequest -Source "release/1.0/fix/q" -Target "release/1.0/main"
+Invoke-PublishPullRequest -Source "release/1.0/fix/r" -Target "release/1.0/main"
 
-# New major release, with no hardening required
+# New major release, with first pull request
 
 Invoke-InitReleaseBranch "2.0"
-Invoke-PerformRelease "2.0"
+Invoke-ReleaseFixWork "s" "2.0" -skipMerge
+Invoke-PublishPullRequest -Source "release/2.0/fix/s" -Target "release/2.0/main"
