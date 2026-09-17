@@ -36,7 +36,14 @@ function Invoke-GitVersion {
     param ()
 
     exec {
-        $output = docker exec git-rehearsal /tools/dotnet-gitversion /repo /output json /verbosity quiet
+        $output = docker exec git-rehearsal /tools/dotnet-gitversion /repo /output json /verbosity quiet | Out-String
+        if ($LASTEXITCODE -gt 0) {
+            docker exec git-rehearsal /tools/dotnet-gitversion /repo /output json /verbosity Diagnostic /diag | Out-File -FilePath gitversion.log
+            throw "Gitversion failed! ($LASTEXITCODE). See gitversion.log in $(Get-Location) for details."
+        }
+
+        Write-Debug "$output"
+
         $output.SubString($output.IndexOf('{')) | ConvertFrom-Json
     }
 }

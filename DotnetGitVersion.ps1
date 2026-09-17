@@ -54,8 +54,8 @@ function Invoke-GitVersion {
     exec {
         $output = dotnet gitversion /output json /verbosity quiet | Out-String
         if ($LASTEXITCODE -gt 0) {
-            Write-Verbose $output
-            throw "Gitversion failed! ($LASTEXITCODE)"
+            dotnet gitversion /output json /verbosity Diagnostic /diag | Out-File -FilePath gitversion.log
+            throw "Gitversion failed! ($LASTEXITCODE). See gitversion.log in $(Get-Location) for details."
         }
 
         Write-Debug "$output"
