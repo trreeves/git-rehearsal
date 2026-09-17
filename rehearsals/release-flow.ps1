@@ -31,6 +31,11 @@ function Invoke-InitReleaseBranch {
     Set-GitBranch main
     New-GitBranch "release/$version/main"
 
+    # Perform an empty commit to establish the root of the release branch
+    # This commit ensures that pull requests branches at the start of the release branch
+    # recieve the correct version; it allows GitVersion to correctly determine the correct parent branch.
+    Add-GitCommit ./info.txt -Message "Release-Flow: Initialize release branch : release/$version/main"
+
     # To ensure that any commits on a 'fix' branch, for the first release on a release branch, get the correct
     # version number generated, this tag is required at the root of the release branch. 
     # Otherwise the major.minor.path is not right; this is because there is no reliable way for GitVersion to determine
