@@ -36,7 +36,10 @@ function Add-GitCommit {
         $message,
 
         [string]
-        $branch
+        $branch,
+
+        [int]
+        $filesChanged = 3
     )
 
     $currentBranch = exec { git branch --show-current }
@@ -49,7 +52,16 @@ function Add-GitCommit {
         exec { git checkout $branch }
     }
 
+    # Make the change to the file specified
     Add-Content -Path $file -Value $value
+
+    # Change additional files to simulate multiple file changes
+    # This helps demonstrate the 'commit count since version start' values vs
+    # any single incrementing counter
+    for ($i = 1; $i -lt $filesChanged; $i++) {
+        Add-Content -Path "${file}.$i" -Value $value
+    }
+
     exec { git add . }
     exec { git commit -m $message }
 

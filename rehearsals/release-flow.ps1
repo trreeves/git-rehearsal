@@ -65,11 +65,6 @@ function Invoke-InitBetaBranch {
     $null = Set-GitBranch main
     $null = New-GitBranch $branchName
 
-    # Perform an empty commit to establish the root of the beta branch
-    # This commit ensures that pull requests branches at the start of the beta branch
-    # recieve the correct version; it allows GitVersion to correctly determine the correct parent branch.
-    #$null = Add-GitCommit ./info.txt -Message "Release-Flow: Initialize beta branch : $branchName"
-
     $branchName
 }
 
@@ -113,6 +108,13 @@ function Invoke-PerformRelease {
     param([string]$version)
 
     $null = New-GitTag "v$((Invoke-GitVersion).MajorMinorPatch)" -SourceBranch "release/$version/main"
+}
+
+function Invoke-PerformBetaRelease {
+    param([string]$betaBranch)
+
+    $null = Set-GitBranch $betaBranch
+    $null = New-GitTag "beta/$((Invoke-GitVersion).SemVer)"
 }
 
 # ------------
@@ -174,17 +176,21 @@ Set-GitBranch main
 Add-GitCommit ./info.txt -Message "main work 1"
 Add-GitCommit ./info.txt -Message "main work 2"
 
-# Beta1 release
-$beta1 = Invoke-InitBetaBranch "2.1" "beta1"
+# BetaA release
+$betaA = Invoke-InitBetaBranch "2.1" "betaA"
 
-## Beta1 - First PR
-$f_beta1 = Invoke-FeatureBranchWork "story_f_beta1" $beta1 -skipMerge
-Add-GitCommit ./beta.txt -Message "beta work 1"
-Invoke-PublishPullRequest -Source $f_beta1 -Target $beta1
+## BetaA - First PR
+$f_betaA = Invoke-FeatureBranchWork "story_f_bA" $betaA -skipMerge
+Add-GitCommit ./beta.txt -Message "betaA work 1"
+Invoke-PublishPullRequest -Source $f_betaA -Target $betaA
 
-## Beta1 - Feature branch merged
-Set-GitBranch $beta1
-Invoke-FeatureBranchWork "story_g_beta1" -Target $beta1
+## BetaA - Feature branch merged
+Set-GitBranch $betaA
+Invoke-FeatureBranchWork "story_g_bA" -Target $betaA
+
+## BetaA - first release
+Invoke-PerformBetaRelease $betaA
+Add-GitCommit ./beta.txt -Message "betaA work 2"
 
 # Ongoing work on main
 Set-GitBranch main
