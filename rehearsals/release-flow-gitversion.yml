@@ -48,6 +48,25 @@ branches:
     is-release-branch: true
 
   # --------
+  # BRANCHES: beta/<major>.<minor>/<beta-name>
+  # Beta branches are like release branches, in that they never converge back to anywhere.
+  # This relies on the cherry-picking strategy to preserve changes for future versions.
+  beta:
+    regex: ^beta\/\d+\.\d+\/
+    # To achieve a patch-number effect, to allow easy digestion by users, we use the ContinuousDelivery mode,
+    # which will yield and incremented pre-release suffix functioning as the 'patch' counter for the beta
+    # e.g. 1.2.0-beta1.1, 1.2.0-beta1.2 etc
+    mode: ContinuousDelivery
+    # Pre-release tag uses the beta-name
+    tag: useBranchName
+    # We can stay very flexible, and allow beta branches to start from anywhere
+    source-branches:
+    - develop
+    - release
+    - feature
+    is-release-branch: false
+
+  # --------
   # BRANCHES: pull/<PR-id>/merge
   pull-request:
     regex: ^pull\/(.+)\/merge$
@@ -64,8 +83,9 @@ branches:
   # BRANCHES: <prefix>/<name>, release/<major.minor>/<name>
   feature:
     # This regex is promiscuous so it matches feature branches from main, dev 'main' branches and release branches.
-    # Any tokens after the last forward slash will be used in the pre-release tag
-    regex: ^(?!(?:main$|release\/\d+\.\d+\/main$)).+\/
+    # It explicitly excludes main, release main branches, and beta branches from being considered feature branches.
+    # Only tokens after the last forward slash will be used in the pre-release tag
+    regex: ^(?!(?:main$|release\/\d+\.\d+\/main$|beta\/\d+\.\d+\/.+$)).+\/
     # We want to represent the commit count in the pre-release tag for feature branches,
     # to yield a unique sem-ver for each commit, because that's important to us; this is
     # what ContinuousDeployment enables.
