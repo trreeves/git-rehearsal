@@ -42,21 +42,22 @@ function Invoke-InitReleaseBranch {
     # recieve the correct version; it allows GitVersion to correctly determine the correct parent branch.
     $null = Add-GitCommit ./info.txt -Message "Release-Flow: Initialize release branch : $branchName"
 
-    # To ensure that any commits on a 'fix' branch, for the first release on a release branch, get the correct
-    # version number generated, this tag is required at the root of the release branch. 
+    # To ensure that any commits on a release-feature branch, and on pull request branches,
+    # for the first release on a release branch, get the correct version number generated, this tag is required at the 
+    # root of the release branch.
+    #
     # Otherwise the major.minor.path is not right; this is because there is no reliable way for GitVersion to determine
     # major.minor.patch - it can't reliably determine it from the graph.
     # Incidently, you see this same situation occur with GitFlow, for the feature branches taken off the first ever release branch.
     # Though with Gitflow this never occurs with subsequent release branches because there's merge commits in the graph that
     # act as 'version anchors'.
 
-    # This solution feels like an acceptable workaround considering the simplicitly of the branching model overall.
     $null = New-GitTag "rc/v$((Invoke-GitVersion).MajorMinorPatch)-rc.0"
 
     $branchName
 }
 
-# Synopsis: Start a new supported release strain for a 'major.minor' pair.
+# Synopsis: Start a new beta strain for a 'major.minor' pair.
 function Invoke-InitBetaBranch {
     param([string]$version, [string]$betaName)
 
@@ -67,15 +68,7 @@ function Invoke-InitBetaBranch {
     # Perform an empty commit to establish the root of the beta branch
     # This commit ensures that pull requests branches at the start of the beta branch
     # recieve the correct version; it allows GitVersion to correctly determine the correct parent branch.
-    $null = Add-GitCommit ./info.txt -Message "Release-Flow: Initialize beta branch : $branchName"
-
-    # To ensure that any commits on a 'fix' branch, for the first release on a release branch, get the correct
-    # version number generated, this tag is required at the root of the release branch. 
-    # Otherwise the major.minor.path is not right; this is because there is no reliable way for GitVersion to determine
-    # major.minor.patch - it can't reliably determine it from the graph.
-    # Incidently, you see this same situation occur with GitFlow, for the feature branches taken off the first ever release branch.
-    # Though with Gitflow this never occurs with subsequent release branches because there's merge commits in the graph that
-    # act as 'version anchors'.
+    #$null = Add-GitCommit ./info.txt -Message "Release-Flow: Initialize beta branch : $branchName"
 
     $branchName
 }

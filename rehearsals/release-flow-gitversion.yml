@@ -54,7 +54,7 @@ branches:
   beta:
     regex: ^beta\/\d+\.\d+\/
     # To achieve a patch-number effect, to allow easy digestion by users, we use the ContinuousDelivery mode,
-    # which will yield and incremented pre-release suffix functioning as the 'patch' counter for the beta
+    # which will yield an incremented pre-release suffix functioning as the 'patch' counter for the beta
     # e.g. 1.2.0-beta1.1, 1.2.0-beta1.2 etc
     mode: ContinuousDelivery
     # Pre-release tag uses the beta-name
