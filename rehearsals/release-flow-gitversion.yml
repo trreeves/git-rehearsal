@@ -21,7 +21,7 @@ branches:
   # --------
   # We don't have a logical 'main' branch, as per GitFlow, so we effectively disable it
   main:
-    regex: ^__$
+    regex: ^_$
 
   # --------
   # BRANCH: main
@@ -36,7 +36,7 @@ branches:
   # BRANCHES: release/<major>.<minor>/main
   # Our release branches are similar to those in GitFlow, but they are never merged into any other branch.
   release:
-    regex: ^release\/(.+)\/main
+    regex: ^release\/\d+\.\d+\/main$
     # Each commit yields an incremented pre-release
     mode: ContinuousDeployment
     # We choose to yield 'rc' pre-release tags, to our taste.
@@ -50,7 +50,7 @@ branches:
   # --------
   # BRANCHES: pull/<PR-id>/merge
   pull-request:
-    regex: ^pull\/(.+)\/merge
+    regex: ^pull\/(.+)\/merge$
     mode: ContinuousDeployment
     tag: PullRequest
     increment: Inherit
@@ -65,14 +65,14 @@ branches:
   feature:
     # This regex is promiscuous so it matches feature branches from main, dev 'main' branches and release branches.
     # Any tokens after the last forward slash will be used in the pre-release tag
-    regex: ^.+\/
+    regex: ^(?!(?:main$|release\/\d+\.\d+\/main$)).+\/
     # We want to represent the commit count in the pre-release tag for feature branches,
     # to yield a unique sem-ver for each commit, because that's important to us; this is
     # what ContinuousDeployment enables.
     mode: ContinuousDeployment
     # We want to increment the version either by Patch or Minor, depending on the base branch
     increment: inherit
-    # Render the tokens proceeding the regex match, as the stem of the pre-release tag
+    # Render the tokens following the regex match, as the stem of the pre-release tag
     tag: useBranchName
     source-branches: 
     - develop
@@ -82,7 +82,7 @@ branches:
   # --------
   # The following branches have no equivalents in release-flow.
   hotfix:
-    regex: ^___$
+    regex: ^_$
 
   support:
-    regex: ^___$
+    regex: ^_$
