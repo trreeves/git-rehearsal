@@ -16,25 +16,31 @@
 function Invoke-FeatureBranchWork {
     param(
         [string]$featureName,
-        [string]$targetBranch)
+        [string]$targetBranch,
+        [switch]$skipMerge)
 
-    New-GitBranch "feature/$featureName" -SourceBranch $targetBranch
-    Add-GitCommit ./info.txt -Message "$featureName - changes - 1"
-    Add-GitCommit ./info.txt -Message "$featureName - changes - 2"
-    New-GitMerge -TargetBranch $targetBranch
+    $featureBranchName = "feature/$featureName"
+    $null = New-GitBranch $featureBranchName -SourceBranch $targetBranch
+    $null = Add-GitCommit ./info.txt -Message "$featureName - changes - 1"
+    $null = Add-GitCommit ./info.txt -Message "$featureName - changes - 2"
+    if (-not $skipMerge) {
+        $null = New-GitMerge -SourceBranch $featureBranchName -TargetBranch $targetBranch
+    }
+    $featureBranchName
 }
 
 # Synopsis: Start a new supported release strain for a 'major.minor' pair.
 function Invoke-InitReleaseBranch {
     param([string]$version)
 
-    Set-GitBranch main
-    New-GitBranch "release/$version/main"
+    $branchName = "release/$version/main"
+    $null = Set-GitBranch main
+    $null = New-GitBranch $branchName
 
     # Perform an empty commit to establish the root of the release branch
     # This commit ensures that pull requests branches at the start of the release branch
     # recieve the correct version; it allows GitVersion to correctly determine the correct parent branch.
-    Add-GitCommit ./info.txt -Message "Release-Flow: Initialize release branch : release/$version/main"
+    $null = Add-GitCommit ./info.txt -Message "Release-Flow: Initialize release branch : $branchName"
 
     # To ensure that any commits on a 'fix' branch, for the first release on a release branch, get the correct
     # version number generated, this tag is required at the root of the release branch. 
@@ -45,7 +51,33 @@ function Invoke-InitReleaseBranch {
     # act as 'version anchors'.
 
     # This solution feels like an acceptable workaround considering the simplicitly of the branching model overall.
-    New-GitTag "rc/v$((Invoke-GitVersion).MajorMinorPatch)-rc.0"
+    $null = New-GitTag "rc/v$((Invoke-GitVersion).MajorMinorPatch)-rc.0"
+
+    $branchName
+}
+
+# Synopsis: Start a new supported release strain for a 'major.minor' pair.
+function Invoke-InitBetaBranch {
+    param([string]$version, [string]$betaName)
+
+    $branchName = "beta/$version/$betaName"
+    $null = Set-GitBranch main
+    $null = New-GitBranch $branchName
+
+    # Perform an empty commit to establish the root of the beta branch
+    # This commit ensures that pull requests branches at the start of the beta branch
+    # recieve the correct version; it allows GitVersion to correctly determine the correct parent branch.
+    $null = Add-GitCommit ./info.txt -Message "Release-Flow: Initialize beta branch : $branchName"
+
+    # To ensure that any commits on a 'fix' branch, for the first release on a release branch, get the correct
+    # version number generated, this tag is required at the root of the release branch. 
+    # Otherwise the major.minor.path is not right; this is because there is no reliable way for GitVersion to determine
+    # major.minor.patch - it can't reliably determine it from the graph.
+    # Incidently, you see this same situation occur with GitFlow, for the feature branches taken off the first ever release branch.
+    # Though with Gitflow this never occurs with subsequent release branches because there's merge commits in the graph that
+    # act as 'version anchors'.
+
+    $branchName
 }
 
 # Synopsis: Perform release hardening changes via 'fix' branches on a release branch
@@ -56,12 +88,12 @@ function Invoke-ReleaseFixWork {
         [switch]$skipMerge)
 
     $branchName = "release/$version/fix/$fixName"
-    New-GitBranch "release/$version/fix/$fixName" -SourceBranch "release/$version/main"
-    Add-GitCommit ./info.txt -Message "$fixName - changes - 1"
-    Add-GitCommit ./info.txt -Message "$fixName - changes - 2"
+    $null = New-GitBranch "release/$version/fix/$fixName" -SourceBranch "release/$version/main"
+    $null = Add-GitCommit ./info.txt -Message "$fixName - changes - 1"
+    $null = Add-GitCommit ./info.txt -Message "$fixName - changes - 2"
 
     if (-Not $skipMerge) {
-        New-GitMerge -TargetBranch "release/$version/main"
+        $null = New-GitMerge -TargetBranch "release/$version/main"
     }
 
     $branchName
@@ -75,11 +107,11 @@ function Invoke-PublishPullRequest {
         [string]$target
     )
 
-    Set-GitBranch $target
+    $null = Set-GitBranch $target
     $global:pullCounter = $global:pullCounter + 1
     $pullBranch = "pull/$pullCounter/merge"
-    New-GitBranch -BranchName $pullBranch -SourceBranch $target
-    New-GitMerge -SourceBranch $source -TargetBranch $pullBranch
+    $null = New-GitBranch -BranchName $pullBranch -SourceBranch $target
+    $null = New-GitMerge -SourceBranch $source -TargetBranch $pullBranch
     $pullBranch
 }
 
@@ -87,7 +119,7 @@ function Invoke-PublishPullRequest {
 function Invoke-PerformRelease {
     param([string]$version)
 
-    New-GitTag "v$((Invoke-GitVersion).MajorMinorPatch)" -SourceBranch "release/$version/main"
+    $null = New-GitTag "v$((Invoke-GitVersion).MajorMinorPatch)" -SourceBranch "release/$version/main"
 }
 
 # ------------
@@ -132,14 +164,37 @@ Invoke-FeatureBranchWork "story_e" main
 Invoke-ReleaseFixWork "p" "1.0"
 Invoke-PerformRelease "1.0"
 
-Invoke-ReleaseFixWork "q" "1.0" -skipMerge
-Invoke-ReleaseFixWork "r" "1.0" -skipMerge
+$q = Invoke-ReleaseFixWork "q" "1.0" -skipMerge
+$r = Invoke-ReleaseFixWork "r" "1.0" -skipMerge
 
-Invoke-PublishPullRequest -Source "release/1.0/fix/q" -Target "release/1.0/main"
-Invoke-PublishPullRequest -Source "release/1.0/fix/r" -Target "release/1.0/main"
+Invoke-PublishPullRequest -Source $q -Target "release/1.0/main"
+Invoke-PublishPullRequest -Source $r -Target "release/1.0/main"
 
 # New major release, with first pull request
 
-Invoke-InitReleaseBranch "2.0"
-Invoke-ReleaseFixWork "s" "2.0" -skipMerge
-Invoke-PublishPullRequest -Source "release/2.0/fix/s" -Target "release/2.0/main"
+$release_2_0 = Invoke-InitReleaseBranch "2.0"
+$s = Invoke-ReleaseFixWork "s" "2.0" -skipMerge
+Invoke-PublishPullRequest -Source $s -Target $release_2_0
+
+# Ongoing work on main
+Set-GitBranch main
+Add-GitCommit ./info.txt -Message "main work 1"
+Add-GitCommit ./info.txt -Message "main work 2"
+
+# Beta1 release
+$beta1 = Invoke-InitBetaBranch "2.1" "beta1"
+
+## Beta1 - First PR
+$f_beta1 = Invoke-FeatureBranchWork "story_f_beta1" $beta1 -skipMerge
+Add-GitCommit ./beta.txt -Message "beta work 1"
+Invoke-PublishPullRequest -Source $f_beta1 -Target $beta1
+
+## Beta1 - Feature branch merged
+Set-GitBranch $beta1
+Invoke-FeatureBranchWork "story_g_beta1" -Target $beta1
+
+# Ongoing work on main
+Set-GitBranch main
+Add-GitCommit ./info.txt -Message "main work 1"
+Add-GitCommit ./info.txt -Message "main work 2"
+
