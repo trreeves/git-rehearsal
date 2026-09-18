@@ -39,7 +39,8 @@ function Add-GitCommit {
         $branch
     )
 
-    Write-Verbose "Add-GitCommit on $branch"
+    $currentBranch = exec { git branch --show-current }
+    Write-Verbose "Add-GitCommit on $currentBranch"
     if ([System.String]::IsNullOrEmpty($value)) {
         $value = $message
     }
@@ -136,6 +137,6 @@ function New-GitMerge {
     exec { git commit --amend -m "$message [$($versionInfo.FullSemVer)]`n`n$($versionInfo | ConvertTo-Json)" }
 
     if ($deleteSource) {
-        git branch -d $sourceBranch
+        exec { git branch -d $sourceBranch }
     }
 }
