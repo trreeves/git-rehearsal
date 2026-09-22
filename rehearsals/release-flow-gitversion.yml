@@ -18,18 +18,22 @@ commit-message-incrementing: Disabled
 
 branches:
 
-  # --------
-  # BRANCH: main
+  # ---
+  # Branch: main
+  # Yields pre-release labels: alpha.{commit-count}
   # Our 'main' is equivalent to the GitFlow 'develop' branch
+  # ---
   develop:
     regex: ^main$
     mode: ContinuousDeployment
     increment: Minor
     tag: alpha
 
-  # --------
-  # BRANCHES: release/<major>.<minor>/main
+  # ---
+  # Branches: release/<major>.<minor>/main
+  # Yields pre-release labels: rc.{commit-count}
   # Our release branches are similar to those in GitFlow, but they are never merged into any other branch.
+  # ---
   release:
     regex: ^release\/\d+\.\d+\/main$
     # Each commit yields an incremented pre-release
@@ -42,8 +46,10 @@ branches:
     - develop
     is-release-branch: true
 
-  # --------
-  # BRANCHES: pull/<PR-id>/merge
+  # ---
+  # Branches: pull/<PR-id>/
+  # Yields pre-release labels: PullRequest{PR-id}.{commit-count}
+  # ---
   pull-request:
     regex: ^pull\/(.+)\/merge$
     mode: ContinuousDeployment
@@ -69,8 +75,10 @@ branches:
     - develop
     - release
 
-  # --------
-  # BRANCHES: <prefix>/<name>, release/<major.minor>/<name>
+  # ---
+  # Branches: {name}, {prefix}/{name}, release/{major.minor}/{name}
+  # Yields pre-release labels: {name}.{commit-count}
+  # ---
   feature:
     # This regex is promiscuous so it matches feature branches from main, dev 'main' branches and release branches.
     # It explicitly excludes main, release and beta branches from being considered feature branches.
@@ -89,8 +97,9 @@ branches:
     - release
     - feature
 
-  # --------
+  # ---
   # The following branches have no equivalents in release-flow.
+  # ---
 
   # We don't have a logical 'main' branch, as per GitFlow
   main:
