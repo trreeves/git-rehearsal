@@ -55,13 +55,27 @@ branches:
     - release
     - feature
 
+  # ---
+  # Branches: beta/{major}.{minor}/{beta-name}
+  # Yields pre-release labels: beta.{beta-name}.{commit-count}
+  # ---
+  beta:
+    # Any tokens after the last forward slash will be used in the pre-release tag as the beta name qualifier
+    regex: ^beta\/\d+\.\d+\/
+    increment: inherit
+    # Render the tokens following the regex match as the qualifier component of the pre-release tag
+    tag: 'beta.{BranchName}'
+    source-branches:
+    - develop
+    - release
+
   # --------
   # BRANCHES: <prefix>/<name>, release/<major.minor>/<name>
   feature:
     # This regex is promiscuous so it matches feature branches from main, dev 'main' branches and release branches.
-    # It explicitly excludes main, release main branches, and beta branches from being considered feature branches.
+    # It explicitly excludes main, release and beta branches from being considered feature branches.
     # Only tokens after the last forward slash will be used in the pre-release tag
-    regex: ^(?!(?:main$|release\/\d+\.\d+\/main$)).+\/
+    regex: ^(?!(?:main$|release\/\d+\.\d+\/main$|beta\/\d+\.\d+\/)).+\/
     # We want to represent the commit count in the pre-release tag for feature branches,
     # to yield a unique sem-ver for each commit, because that's important to us; this is
     # what ContinuousDeployment enables.
