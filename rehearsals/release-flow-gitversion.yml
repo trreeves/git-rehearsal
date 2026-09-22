@@ -68,6 +68,7 @@ branches:
   beta:
     # Any tokens after the last forward slash will be used in the pre-release tag as the beta name qualifier
     regex: ^beta\/\d+\.\d+\/
+    mode: ContinuousDeployment
     increment: inherit
     # Render the tokens following the regex match as the qualifier component of the pre-release tag
     tag: 'beta.{BranchName}'
