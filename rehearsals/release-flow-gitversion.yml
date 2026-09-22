@@ -48,12 +48,12 @@ branches:
 
   # ---
   # Branches: pull/<PR-id>/
-  # Yields pre-release labels: PullRequest{PR-id}.{commit-count}
+  # Yields pre-release labels:PR-{PR-id}.{commit-count}
   # ---
   pull-request:
     regex: ^pull\/(.+)\/merge$
     mode: ContinuousDeployment
-    tag: PullRequest
+    tag: PR-
     increment: Inherit
     tag-number-pattern: '[/-](?<number>\d+)[-/]'
     source-branches: 
