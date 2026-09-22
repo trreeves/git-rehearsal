@@ -66,7 +66,7 @@ function Add-GitCommit {
     exec { git commit -m $message }
 
     $versionInfo = Invoke-GitVersion
-    exec { git commit --amend -m "$message [$($versionInfo.FullSemVer)]`n`n$($versionInfo | ConvertTo-Json)" }
+    exec { git commit --amend -m "[$($versionInfo.FullSemVer)] : $message`n`n$($versionInfo | ConvertTo-Json)" }
 }
 
 function New-GitTag {
