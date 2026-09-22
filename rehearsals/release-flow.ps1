@@ -177,7 +177,7 @@ Add-GitCommit ./info.txt -Message "main work 1"
 Add-GitCommit ./info.txt -Message "main work 2"
 
 # BetaA release
-$betaA = Invoke-InitBetaBranch "2.1" "betaA"
+$betaA = Invoke-InitBetaBranch "2.1" "A"
 
 ## BetaA - First PR
 $f_betaA = Invoke-FeatureBranchWork "story_f_bA" $betaA -skipMerge
